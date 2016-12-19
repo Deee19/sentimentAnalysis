@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/SentimentAnalysis.iml" filepath="$PROJECT_DIR$/.idea/SentimentAnalysis.iml" />
+      <module fileurl="file://$USER_HOME$/Desktop/alchemyapi-recipes-twitter/.idea/alchemyapi-recipes-twitter.iml" filepath="$USER_HOME$/Desktop/alchemyapi-recipes-twitter/.idea/alchemyapi-recipes-twitter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../sentAnalysis/.idea/sentAnalysis.iml" filepath="$PROJECT_DIR$/../sentAnalysis/.idea/sentAnalysis.iml" />
+      <module fileurl="file://C:/Django_Projects/testing/.idea/testing.iml" filepath="C:/Django_Projects/testing/.idea/testing.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../untitled/.idea/untitled.iml" filepath="$PROJECT_DIR$/../untitled/.idea/untitled.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../untitled1/.idea/untitled1.iml" filepath="$PROJECT_DIR$/../untitled1/.idea/untitled1.iml" />
+    </modules>
+  </component>
+</project>
