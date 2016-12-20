@@ -1,7 +1,6 @@
 import re
 import nltk
 import pandas as pd
-from nltk.stem.snowball import SnowballStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
@@ -11,7 +10,6 @@ from sklearn.cluster import KMeans
 from sklearn import metrics
 from time import time
 
-# stemmer = SnowballStemmer("english")
 stemmer = WordNetLemmatizer()
 
 def preprocess(tweet):
@@ -56,67 +54,54 @@ def tokenize_only(text):
             filtered_tokens.append(token)
     return filtered_tokens
 
-def feature_extraction(words):
+def feature_extraction_cluster(words):
 
     t0 = time()
-    tfidf = TfidfVectorizer(stop_words='english', max_df=0.5, max_features=1000, min_df=2, tokenizer=tokenize_and_stem,
-                            ngram_range=(1, 1), use_idf=True)
+    tfidf = TfidfVectorizer(stop_words='english', max_df=0.5, max_features=1000, min_df=2, tokenizer=tokenize_only,
+                            ngram_range=(1, 3), use_idf=True)
     tfs = tfidf.fit_transform(words)
     print("done in %fs" % (time() - t0))
     term = tfidf.get_feature_names()
     print(term)
-    # return  tfs
+
     # Dimensionality Reduction using LSA
     svd = TruncatedSVD(n_components=2)
     normalizer = Normalizer(copy=False)
     lsa = make_pipeline(svd, normalizer)
-    di_tfs = lsa.fit_transform(tfs)
-    print(di_tfs)
+    tfs = lsa.fit_transform(tfs)
+
     explained_variance = svd.explained_variance_ratio_.sum()
     print("Explained variance of the SVD step: {}%".format(int(explained_variance * 100)))
     print()
 
-    return di_tfs
-
-
-def cluster(terms):
-    ter
+# Clustering using Kmeans
     num_clusters = 3
     km = KMeans(n_clusters=num_clusters)
     print("Clustering data")
     t0 = time()
-    km.fit(terms)
+    km.fit(tfs)
     clusters = km.labels_.tolist()
     print(clusters)
     print("done in %0.3fs" % (time() - t0))
-    print("Silhouette Coefficient: %0.3f" % metrics.silhouette_score(terms, km.labels_, sample_size=1000))
+    print("Silhouette Coefficient: %0.3f" % metrics.silhouette_score(tfs, km.labels_, sample_size=1000))
     print()
 
     # Grouping the tweets into their respective clusters
-    groups = {'tweets': processedTweet, 'cluster': clusters}
+    groups = {'tweets': words, 'cluster': clusters}
     frame = pd.DataFrame(groups, index=[clusters], columns=['tweets', 'cluster'])
     dami = frame['cluster'].value_counts()
     print(dami)
 
-    tokenized_words = []
-    token_lemma_words = []
-    for i in processedTweet:
-        all_lemmatized = tokenize_and_stem(i)
-        token_lemma_words.extend(all_lemmatized)
-
-        all_tokenized = tokenize_only(i)
-        tokenized_words.extend(all_tokenized)
-    vocab_frame = pd.DataFrame({'word': tokenized_words}, index = token_lemma_words)
-
     print("Top terms per cluster:")
     print()
-    order_centroids = km.cluster_centers_.argsort()[:, ::-1]
+    original_space_centroids = svd.inverse_transform(km.cluster_centers_)
+    order_centroids = original_space_centroids.argsort()[:, ::-1]
 
     for i in range(num_clusters):
         print('Cluster %d words:' % i, end='')
 
         for ind in order_centroids[i, :6]:
-            print(' %s' % vocab_frame.ix[term[ind]].values.tolist()[0][0], end=',')
+            print(' %s' % term[ind], end=',')
         print()
         print()
 
@@ -140,4 +125,4 @@ while line:
     line = fp.readline()
 
 fp.close()
-cluster(feature_extraction(our_text))
+feature_extraction_cluster(our_text)
